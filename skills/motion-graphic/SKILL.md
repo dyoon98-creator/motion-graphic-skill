@@ -71,12 +71,20 @@ Using the structures in `references/story.md`, build a scene table, show it to t
 Don't edit the ~700-line engine directly. **Split it into small files**; the player, audio and helpers never need touching, so there's no need to read them.
 
 ```bash
-python3 "$SKILL_DIR/scripts/assemble.py" split "$SKILL_DIR/assets/engine.html" <work>/parts
+# Put the approved copy, evidence and duration into <work>/inputs.json first.
+python3 "$SKILL_DIR/scripts/assemble.py" info --brief '<approved brief>' --theme npl --inputs <work>/inputs.json
+python3 "$SKILL_DIR/scripts/assemble.py" split "$SKILL_DIR/assets/engine.html" <work>/parts --brief '<approved brief>' --theme npl --inputs <work>/inputs.json
 # edit the files in parts/ using the host's file-editing tools, then
 python3 "$SKILL_DIR/scripts/assemble.py" build <work>/parts <output.html>   # assemble + syntax check
 ```
 
-To revise a finished HTML later, `split <output.html> parts` again. Never edit `parts/_shell.html`. (The shell's `<html lang>` is only a default; the engine sets it at runtime to the language being shown.)
+The default build selects from the 46 original Korean recipes in `15.design_base/catalogs/prompt-motion/catalog.json`, reads the resolved theme and the MIT Cinetic technique library, and writes a distinct scene/style/plan for the selected recipe. Use `recipes --brief '<brief>'` to inspect every candidate, or add `--recipe SLUG` to both commands for an explicit choice. Selection never substitutes a supported recipe for a better matching unsupported recipe. `info` without inputs is reference only: inspect `missing_inputs`, `input_status` and `render_ready`. With inputs, missing fields exit 2; custom authoring starts only when `missing_inputs` is empty. `template_support.supported` describes automatic HTML generation, not whether a recipe can be authored in another renderer.
+
+Eleven automatic variants currently cover text-built routes, information posters, intro masks, workflow ribbons, decision paths, recursive cards, milestones, paper evidence notes, owned line drawings, quantity stacks and signal labels. Other recipes return their complete prompt and required inputs for custom authoring; they do not generate substitute footage, models, numbers or brands. `recipe-input.json` and `PM.authoring` in `geometry.js` carry the selected full prompt, originality changes, selection reason, source SHA and three complete recommended techniques. Their frame timing also sets the arrival duration. Read this packet when refining the scene, then keep the selected metaphor and supplied evidence in the actual output.
+
+Automatic inputs are a JSON object with `title`, `duration` (8–60 seconds), optional `subtitle`, `language` (`ko`/`en`), and the structured fields listed by `info.template_support.renderer_inputs`. For example, a workflow ribbon uses `steps: [{"label":"접수","detail":"원문 확인"},{"label":"확인","detail":"필수 입력 확인"},{"label":"출력","detail":"검증 후 출력"}]`. Quantity stacks use `numbers: [{"label":"A","value":0,"unit":"건","source":"검증용 합성자료"},{"label":"B","value":4,"unit":"건","source":"검증용 합성자료"}]`; confirmed zero is valid, while absent values fail. Put additional source requirements under `source_inputs` using the exact names in `recipe.inputs`. Sources must be real or explicitly labelled synthetic. `--theme npl` is the default; only resolved colors and fonts from the selected 15 token build are used.
+
+For a story that requires custom scenes, obtain the same `info` packet with all required source inputs, then use the original generic `split ENGINE NEW_PARTS` command and author the parts against the selected prompt. To revise a finished HTML later, `split <output.html> NEW_PARTS` again. An existing parts directory is rejected before writing so edits cannot be overwritten. Never edit `parts/_shell.html`. (The shell's `<html lang>` is only a default; the engine sets it at runtime to the language being shown.)
 
 | Part | Contents |
 |---|---|
